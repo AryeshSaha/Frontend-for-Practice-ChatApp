@@ -18,12 +18,12 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [pass, setPass] = useState("");
   const [show, setShow] = useState(false);
-  
-    const [loading, setLoading] = useState(false);
-  
-    const toast = useToast();
-  
-    const navigate = useNavigate();
+
+  const [loading, setLoading] = useState(false);
+
+  const toast = useToast();
+
+  const navigate = useNavigate();
 
   const submitHandler = async () => {
     setLoading(true);
@@ -62,10 +62,10 @@ const Login = () => {
         position: "top",
       });
 
-      localStorage.setItem('userInfo', JSON.stringify(data))
+      localStorage.setItem("userInfo", JSON.stringify(data));
 
-      setLoading(false)
-      navigate('/chats')
+      setLoading(false);
+      navigate("/chats");
     } catch (error) {
       toast({
         title: "Error",
@@ -78,10 +78,10 @@ const Login = () => {
       setLoading(false);
     }
   };
-  
+
   return (
     <>
-      <VStack spacing={"5px"} >
+      <VStack spacing={"5px"}>
         {/* Email */}
         <FormControl id="email" isRequired>
           <FormLabel>Email:</FormLabel>
@@ -106,7 +106,7 @@ const Login = () => {
             <InputRightElement w={"4.5rem"}>
               <Button
                 h={"1.75rem"}
-                bg={'none'}
+                bg={"none"}
                 size={"em"}
                 onClick={() => setShow((prev) => !prev)}
               >
@@ -119,7 +119,6 @@ const Login = () => {
         <Button
           colorScheme="blue"
           w={"100%"}
-          color={"#ffffffff"}
           style={{ marginTop: 15 }}
           onClick={submitHandler}
           isLoading={loading}

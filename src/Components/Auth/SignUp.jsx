@@ -75,10 +75,10 @@ const SignUp = () => {
         position: "top",
       });
 
-      localStorage.setItem('userInfo', JSON.stringify(data))
+      localStorage.setItem("userInfo", JSON.stringify(data));
 
-      setLoading(false)
-      navigate('/chats')
+      setLoading(false);
+      navigate("/chats");
     } catch (error) {
       toast({
         title: "Error",
@@ -94,7 +94,7 @@ const SignUp = () => {
 
   return (
     <>
-      <VStack spacing={"5px"} color={"black"}>
+      <VStack spacing={"5px"}>
         {/* Name */}
         <FormControl id="name" isRequired>
           <FormLabel>Name:</FormLabel>
@@ -166,7 +166,6 @@ const SignUp = () => {
         <Button
           colorScheme="blue"
           w={"100%"}
-          color={"#ffffffff"}
           style={{ marginTop: 15 }}
           onClick={submitHandler}
           isLoading={loading}
