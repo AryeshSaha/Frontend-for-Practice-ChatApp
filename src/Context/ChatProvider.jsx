@@ -4,11 +4,13 @@ import { useNavigate } from "react-router-dom";
 const ChatContext = createContext();
 
 const ChatProvider = ({ children }) => {
+  const ColorW = "white";
+  const ColorB = "black";
   const url = "http://127.0.0.1:4000";
   const [user, setUser] = useState();
   const [selectedChat, setSelectedChat] = useState();
   const [chats, setChats] = useState();
-  const [notification, setNotification] = useState([])
+  const [notification, setNotification] = useState([]);
 
   const navigate = useNavigate();
 
@@ -31,7 +33,9 @@ const ChatProvider = ({ children }) => {
         chats,
         setChats,
         notification,
-        setNotification
+        setNotification,
+        ColorW,
+        ColorB,
       }}
     >
       {children}

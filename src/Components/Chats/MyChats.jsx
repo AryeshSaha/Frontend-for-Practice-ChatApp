@@ -3,13 +3,14 @@ import { Box, Stack, Text } from "@chakra-ui/layout";
 import { useToast } from "@chakra-ui/toast";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { Button } from "@chakra-ui/react";
+import { Button, useColorMode, Divider } from "@chakra-ui/react";
 import { getSender } from "../../config/ChatLogics";
 import ChatLoading from "../Misc/Chat Loading/ChatLoading";
 import { ChatState } from "../../Context/ChatProvider";
 import GroupChatModal from "../Misc/Group Chat Modals/GroupChatModal";
 
 const MyChats = ({ fetchAgain }) => {
+  const { colorMode } = useColorMode();
   const [loggedUser, setLoggedUser] = useState();
 
   const { url, selectedChat, setSelectedChat, user, chats, setChats } =
@@ -53,7 +54,7 @@ const MyChats = ({ fetchAgain }) => {
       flexDir="column"
       alignItems="center"
       p={3}
-      bg="white"
+      bg={colorMode}
       w={{ base: "100%", md: "31%" }}
       borderRadius="lg"
       borderWidth="1px"
@@ -79,11 +80,12 @@ const MyChats = ({ fetchAgain }) => {
           </Button>
         </GroupChatModal>
       </Box>
+      <Divider orientation="horizontal" />
       <Box
         display="flex"
         flexDir="column"
         p={3}
-        bg="#222222"
+        bg={colorMode}
         w="100%"
         h="100%"
         borderRadius="lg"
@@ -95,7 +97,7 @@ const MyChats = ({ fetchAgain }) => {
               <Box
                 onClick={() => setSelectedChat(chat)}
                 cursor="pointer"
-                bg={selectedChat === chat ? "#38B2AC" : "#E8E8E8"}
+                bg={selectedChat === chat ? "#38B2AC" : "#e9e9e9"}
                 color={selectedChat === chat ? "white" : "black"}
                 px={3}
                 py={2}
@@ -109,7 +111,9 @@ const MyChats = ({ fetchAgain }) => {
                 </Text>
                 {chat.lastMsg && (
                   <Text fontSize="xs">
-                    <b>{chat.isGroupChat && chat.lastMsg.sender.name + " : "}</b>
+                    <b>
+                      {chat.isGroupChat && chat.lastMsg.sender.name + " : "}
+                    </b>
                     {chat.lastMsg.content.length > 50
                       ? chat.lastMsg.content.substring(0, 51) + "..."
                       : chat.lastMsg.content}

@@ -7,7 +7,9 @@ import {
   IconButton,
   Input,
   Spinner,
+  useColorMode,
   useToast,
+  Divider,
 } from "@chakra-ui/react";
 import _ from "lodash";
 import { getSender, getSenderFull } from "../../config/ChatLogics";
@@ -21,6 +23,7 @@ import { io } from "socket.io-client";
 let socket, selectedChatCompare;
 
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {
+  const { colorMode } = useColorMode();
   const {
     url,
     user,
@@ -253,12 +256,13 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
               </>
             )}
           </Text>
+          <Divider orientation="horizontal" />
           <Box
             display={"flex"}
             flexDir={"column"}
             justifyContent={"flex-end"}
             p={3}
-            bg={"#222222"}
+            bg={colorMode}
             w={"100%"}
             h={"100%"}
             borderRadius={"lg"}
@@ -285,7 +289,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
               </Box>
             )}
 
-            {isTyping ? <Text color={"white"}>typing...</Text> : <></>}
+            {isTyping ? <Text color={colorMode}>typing...</Text> : <></>}
             <FormControl
               onKeyDown={sendMsg}
               isRequired
@@ -295,14 +299,14 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
             >
               <Input
                 variant={"outline"}
-                bg={"whiteAlpha.900"}
+                bg={colorMode}
                 placeholder="Enter a message..."
                 value={newMsg}
                 onChange={typingHandler}
               />
               <ArrowRightIcon
                 display={{ base: "flex", lg: "none" }}
-                color={"#c4c4c4"}
+                color={colorMode}
                 fontSize={"2xl"}
                 mx={5}
                 onClick={handleSubmit}

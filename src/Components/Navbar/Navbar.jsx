@@ -9,6 +9,7 @@ import {
   Avatar,
   Box,
   Button,
+  Divider,
   Drawer,
   DrawerBody,
   DrawerContent,
@@ -23,7 +24,7 @@ import {
   Spinner,
   Text,
   Tooltip,
-  // useColorMode,
+  useColorMode,
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
@@ -39,7 +40,7 @@ import NotificationBadge from "react-notification-badge/lib/components/Notificat
 import Effect from "react-notification-badge/lib/components/Effect";
 
 const Navbar = () => {
-  // const { colorMode, toggleColorMode } = useColorMode();
+  const { colorMode, toggleColorMode } = useColorMode();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [search, setSearch] = useState("");
   const [searchResult, setSearchResult] = useState([]);
@@ -53,6 +54,8 @@ const Navbar = () => {
     setChats,
     notification,
     setNotification,
+    ColorW,
+    ColorB,
   } = ChatState();
   const navigate = useNavigate();
   const toast = useToast();
@@ -142,14 +145,17 @@ const Navbar = () => {
         display="flex"
         justifyContent="space-between"
         alignItems="center"
-        bg="white"
+        bg={colorMode}
         w="100%"
         p="5px 10px 5px 10px"
-        borderWidth="5px"
       >
         {/* Search Component */}
         <Tooltip label="Search Users to chat" hasArrow placement="bottom-end">
-          <Button variant="ghost" onClick={onOpen} color={"black"}>
+          <Button
+            variant="ghost"
+            onClick={onOpen}
+            color={colorMode === "light" ? ColorB : ColorW}
+          >
             <Search2Icon />
             <Text d={{ base: "none", md: "flex" }} px={4}>
               Search User
@@ -158,7 +164,7 @@ const Navbar = () => {
         </Tooltip>
 
         {/* App Title */}
-        <Text display={{ base: "none", md: "flex" }} fontSize="xl" color={"black"}>
+        <Text display={{ base: "none", md: "flex" }} fontSize="xl">
           Practice ChatApp
         </Text>
 
@@ -166,22 +172,25 @@ const Navbar = () => {
         <div>
           <Menu>
             {/* Theme */}
-            {/* <MenuButton onClick={toggleColorMode}>
-              {colorMode === "dark" ? (
-                <SunIcon color={"black"} />
-              ) : (
-                <MoonIcon />
-              )}
-            </MenuButton> */}
+            <MenuButton
+              onClick={toggleColorMode}
+              fontSize={"1.5rem"}
+              p={1}
+              mr={{base: '2', md: '4'}}
+            >
+              {colorMode === "dark" ? <SunIcon mt={1} /> : <MoonIcon mt={1} />}
+            </MenuButton>
+          </Menu>
+          <Menu>
             {/* Notification */}
-            <MenuButton p={1} mr={2}>
+            <MenuButton p={1} mr={{base: '1', md: '3'}}>
               <NotificationBadge
                 count={notification.length}
                 effect={Effect.SCALE}
               />
-              <BellIcon color="black" fontSize={'1.9rem'} />
+              <BellIcon fontSize={"1.9rem"} />
             </MenuButton>
-            <MenuList px={3}>
+            <MenuList>
               {!notification?.length && "No New Messages"}
               {notification?.map((noti) => (
                 <MenuItem
@@ -201,11 +210,7 @@ const Navbar = () => {
 
           {/* Profile */}
           <Menu>
-            <MenuButton
-              as={Button}
-              bg="none"
-              rightIcon={<ChevronDownIcon color={"black"} />}
-            >
+            <MenuButton as={Button} bg="none" rightIcon={<ChevronDownIcon />}>
               <Avatar
                 size="sm"
                 cursor="pointer"
@@ -223,13 +228,14 @@ const Navbar = () => {
           </Menu>
         </div>
       </Box>
+      <Divider orientation="horizontal" />
 
       {/* Side Drawer */}
       <div>
         <Drawer placement="left" onClose={onClose} isOpen={isOpen}>
           <DrawerOverlay />
           <DrawerContent>
-            <DrawerHeader borderBottomWidth="1px">Search Users</DrawerHeader>
+            <DrawerHeader borderBottomWidth="1px" onClick={onClose} >Search Users</DrawerHeader>
             <DrawerBody>
               <Box display="flex" pb={2}>
                 <Input

@@ -2,7 +2,7 @@
 
 .App {
   min-height: 100vh;
-  background-color: rgb(48, 48, 48);
+  /* background-color: rgb(48, 48, 48); */
 }
 
 ::-webkit-scrollbar {
