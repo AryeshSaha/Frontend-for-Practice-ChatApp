@@ -11,10 +11,10 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-
-const url = "http://127.0.0.1:4000";
+import { ChatState } from "../../Context/ChatProvider";
 
 const Login = () => {
+  const { url } = ChatState()
   const [email, setEmail] = useState("");
   const [pass, setPass] = useState("");
   const [show, setShow] = useState(false);

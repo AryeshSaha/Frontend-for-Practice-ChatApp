@@ -11,10 +11,10 @@ import {
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-
-const url = "http://127.0.0.1:4000";
+import { ChatState } from "../../Context/ChatProvider";
 
 const SignUp = () => {
+  const { url } = ChatState()
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [pass, setPass] = useState("");
