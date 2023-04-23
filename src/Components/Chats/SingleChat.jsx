@@ -20,7 +20,7 @@ import { useEffect } from "react";
 import Messages from "../Messages/Messages";
 import { io } from "socket.io-client";
 
-let socket, selectedChatCompare;
+var socket, selectedChatCompare;
 
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const { colorMode } = useColorMode();
@@ -156,7 +156,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   };
 
   useEffect(() => {
-    socket = io(url);
+    socket = io(url, {transports: ['websocket'],upgrade:false});
 
     socket.emit("setup", user);
 
