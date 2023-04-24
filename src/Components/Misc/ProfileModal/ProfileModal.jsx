@@ -22,12 +22,12 @@ import axios from "axios";
 import { useState } from "react";
 import { ChatState } from "../../../Context/ChatProvider";
 
-const ProfileModal = ({ children }) => {
+const ProfileModal = ({ user, children }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [dpInput, setDpInput] = useState(false);
   const [dpUrl, setDpUrl] = useState("");
   const [dp, setDp] = useState(null);
-  const { url, user, setUser } = ChatState();
+  const { url, setUser } = ChatState();
   const toast = useToast();
 
   const handleDPChange = (e) => {

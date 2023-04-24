@@ -39,6 +39,8 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const [loading, setLoading] = useState(false);
   // input of every single new msg
   const [newMsg, setNewMsg] = useState("");
+  // input of every single new img
+  const [newImg, setNewImg] = useState(null);
   // to keep the messages
   const [msgs, setMsgs] = useState([]);
   // to change typing state from client 1 to server
@@ -119,7 +121,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   };
 
   const sendMsg = async (event) => {
-    if (event.key === "Enter" && newMsg) {
+    if (event.key === "Enter" && newMsg || newImg) {
       socket.emit("stop typing", selectedChat);
       try {
         const config = {
@@ -132,6 +134,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
           `${url}/api/msg`,
           {
             content: newMsg,
+            image: newImg,
             chatId: selectedChat._id,
           },
           config
@@ -220,6 +223,13 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       }
     }, timer);
   };
+
+// Task for single image first
+// Upload button
+// upload to cloudinary folder
+// send secure_url of that image to the server
+// access and display the image in the chat in some way
+// then try the same for multiple images
 
   return (
     <>

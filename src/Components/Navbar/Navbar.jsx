@@ -217,7 +217,7 @@ const Navbar = () => {
               />
             </MenuButton>
             <MenuList>
-              <ProfileModal>
+              <ProfileModal user={user} >
                 <MenuItem>My Profile</MenuItem>
               </ProfileModal>
               <MenuDivider />
