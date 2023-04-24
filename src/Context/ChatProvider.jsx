@@ -6,8 +6,8 @@ const ChatContext = createContext();
 const ChatProvider = ({ children }) => {
   const ColorW = "white";
   const ColorB = "black";
-  // const url = "http://127.0.0.1:4000";
-  const url = "https://backend-practice-chat-app.onrender.com";
+  const url = "http://127.0.0.1:4000";
+  // const url = "https://backend-practice-chat-app.onrender.com";
   const [user, setUser] = useState();
   const [selectedChat, setSelectedChat] = useState();
   const [chats, setChats] = useState();

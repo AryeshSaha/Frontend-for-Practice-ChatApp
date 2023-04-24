@@ -54,8 +54,6 @@ const Navbar = () => {
     setChats,
     notification,
     setNotification,
-    ColorW,
-    ColorB,
   } = ChatState();
   const navigate = useNavigate();
   const toast = useToast();
@@ -154,7 +152,7 @@ const Navbar = () => {
           <Button
             variant="ghost"
             onClick={onOpen}
-            color={colorMode === "light" ? ColorB : ColorW}
+            color={colorMode}
           >
             <Search2Icon />
             <Text d={{ base: "none", md: "flex" }} px={4}>
@@ -219,7 +217,7 @@ const Navbar = () => {
               />
             </MenuButton>
             <MenuList>
-              <ProfileModal user={user}>
+              <ProfileModal>
                 <MenuItem>My Profile</MenuItem>
               </ProfileModal>
               <MenuDivider />
