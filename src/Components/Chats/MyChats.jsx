@@ -114,9 +114,15 @@ const MyChats = ({ fetchAgain }) => {
                     <b>
                       {chat.isGroupChat && chat.lastMsg.sender.name + " : "}
                     </b>
-                    {chat.lastMsg.content.length > 50
-                      ? chat.lastMsg.content.substring(0, 51) + "..."
-                      : chat.lastMsg.content}
+                    {chat.lastMsg.content?.length > 50 ? (
+                      chat.lastMsg.images?.length > 0 ? (
+                        "Photo"
+                      ) : (
+                        chat.lastMsg.content.substring(0, 51) + "..."
+                      )
+                    ) : (
+                      "Photo"
+                    )}
                   </Text>
                 )}
               </Box>

@@ -35,7 +35,7 @@ const ProfileModal = ({ user, children }) => {
     setDpUrl(URL.createObjectURL(e.target.files[0]));
   };
 
-  const dpHandler = async (dp) => {
+  const dpHandler = async () => {
     const formData = new FormData();
 
     formData.append("file", dp);
@@ -165,7 +165,7 @@ const ProfileModal = ({ user, children }) => {
                 colorScheme="messenger"
                 mt={2}
                 mx={3}
-                onClick={() => dpHandler(dp)}
+                onClick={dpHandler}
                 display={!dpInput ? "none" : ""}
               >
                 Save

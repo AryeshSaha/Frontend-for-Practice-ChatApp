@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { ChatState } from "../../Context/ChatProvider";
 import { Text, Box } from "@chakra-ui/layout";
-import { ArrowBackIcon, ArrowRightIcon } from "@chakra-ui/icons";
+import { AddIcon, ArrowBackIcon, ArrowRightIcon } from "@chakra-ui/icons";
 import {
   FormControl,
   IconButton,
@@ -10,6 +10,8 @@ import {
   useColorMode,
   useToast,
   Divider,
+  FormLabel,
+  Image,
 } from "@chakra-ui/react";
 import _ from "lodash";
 import { getSender, getSenderFull } from "../../config/ChatLogics";
@@ -41,6 +43,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const [newMsg, setNewMsg] = useState("");
   // input of every single new img
   const [newImg, setNewImg] = useState(null);
+  const [imgUrl, setImgUrl] = useState("");
   // to keep the messages
   const [msgs, setMsgs] = useState([]);
   // to change typing state from client 1 to server
@@ -121,7 +124,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   };
 
   const sendMsg = async (event) => {
-    if (event.key === "Enter" && newMsg || newImg) {
+    if (event.key === "Enter" && newMsg) {
       socket.emit("stop typing", selectedChat);
       try {
         const config = {
@@ -134,7 +137,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
           `${url}/api/msg`,
           {
             content: newMsg,
-            image: newImg,
             chatId: selectedChat._id,
           },
           config
@@ -159,15 +161,12 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   };
 
   useEffect(() => {
-    socket = io(url, {transports: ['websocket'],upgrade:false});
+    socket = io(url, { transports: ["websocket"], upgrade: false });
 
     socket.emit("setup", user);
 
     socket.on("connected", () => {
       setSocketCon(true);
-      console.log("====================================");
-      console.log(`connected event activated`);
-      console.log("====================================");
     });
 
     socket.on("typing", () => {
@@ -224,12 +223,69 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     }, timer);
   };
 
-// Task for single image first
-// Upload button
-// upload to cloudinary folder
-// send secure_url of that image to the server
-// access and display the image in the chat in some way
-// then try the same for multiple images
+  // Task for single image first
+  // Upload button
+  // Preview for the selected image
+  // Add caption for the selected image in the preview tab to send with the image
+  // upload to cloudinary folder
+  // send secure_url of that image to the server
+  // access and display the image in the chat in some way
+  // then try the same for multiple images
+
+  const handleImg = (e) => {
+    setNewImg(e.target.files[0]);
+    setImgUrl(URL.createObjectURL(e.target.files[0]));
+  };
+
+  const sendImg = async () => {
+    if (newImg) {
+      const formData = new FormData();
+
+      formData.append("file", newImg);
+      formData.append("upload_preset", "chat-app");
+      formData.append("folder", `ChatMedia/${selectedChat._id}`);
+
+      try {
+        const res = await axios.post(
+          "https://api.cloudinary.com/v1_1/aryesh/image/upload",
+          formData
+        );
+        setNewImg(null);
+
+        const config = {
+          headers: {
+            "Content-type": "application/json",
+            Authorization: `Bearer ${user.token}`,
+          },
+        };
+
+        const { data } = await axios.post(
+          `${url}/api/msg`,
+          {
+            image: res?.data?.secure_url,
+            chatId: selectedChat._id,
+          },
+          config
+        );
+
+        // socket is trying to send the event of sending msg to the server so that the server can send the data to the receiver.
+        socket.emit("sendMsg", data);
+
+        setMsgs([...msgs, data]);
+
+        setImgUrl("");
+      } catch (error) {
+        toast({
+          title: "Error Occured!",
+          description: "Failed to send the Media",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+          position: "bottom",
+        });
+      }
+    }
+  };
 
   return (
     <>
@@ -299,29 +355,63 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
               </Box>
             )}
 
-            {isTyping ? <Text color={colorMode}>typing...</Text> : <></>}
-            <FormControl
-              onKeyDown={sendMsg}
-              isRequired
-              mt={3}
+            {/* Preview Images */}
+            {imgUrl ? (
+              <Box display={"flex"} justifyContent={'start'} alignItems={'end'} >
+                <Image boxSize={'100px'} src={imgUrl} alt="image" />
+                <ArrowRightIcon
+                  color={colorMode}
+                  fontSize={"xl"}
+                  mx={3}
+                  onClick={sendImg}
+                />
+              </Box>
+            ) : (
+              <></>
+            )}
+
+            <Box
               display={"flex"}
+              justifyContent={"space-between"}
               alignItems={"center"}
             >
-              <Input
-                variant={"outline"}
-                bg={colorMode}
-                placeholder="Enter a message..."
-                value={newMsg}
-                onChange={typingHandler}
-              />
-              <ArrowRightIcon
-                display={{ base: "flex", lg: "none" }}
-                color={colorMode}
-                fontSize={"2xl"}
-                mx={5}
-                onClick={handleSubmit}
-              />
-            </FormControl>
+              {/* Image Input */}
+              <FormControl w={"auto"}>
+                <FormLabel htmlFor="dp" w={"auto"} mt={3} me={4}>
+                  <AddIcon fontSize={"20px"} />
+                </FormLabel>
+                <Input
+                  type="file"
+                  id="dp"
+                  accept="image/*"
+                  display={"none"}
+                  onChange={handleImg}
+                />
+              </FormControl>
+
+              {isTyping ? <Text color={colorMode}>typing...</Text> : <></>}
+              <FormControl
+                onKeyDown={sendMsg}
+                mt={3}
+                display={"flex"}
+                alignItems={"center"}
+              >
+                <Input
+                  variant={"outline"}
+                  bg={colorMode}
+                  placeholder="Enter a message..."
+                  value={newMsg}
+                  onChange={typingHandler}
+                />
+                <ArrowRightIcon
+                  display={{ base: "flex", lg: "none" }}
+                  color={colorMode}
+                  fontSize={"2xl"}
+                  mx={5}
+                  onClick={handleSubmit}
+                />
+              </FormControl>
+            </Box>
           </Box>
         </>
       ) : (
