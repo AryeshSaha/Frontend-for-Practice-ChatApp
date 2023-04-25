@@ -1,7 +1,20 @@
 import React from "react";
 import ScrollableFeed from "react-scrollable-feed";
 import { ChatState } from "../../Context/ChatProvider";
-import { Avatar, Box, Image, Tooltip } from "@chakra-ui/react";
+import {
+  Avatar,
+  Button,
+  Image,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  Tooltip,
+  useDisclosure,
+} from "@chakra-ui/react";
 import {
   isLastMessage,
   isSameSender,
@@ -11,6 +24,7 @@ import {
 
 const Messages = ({ msgs }) => {
   const { user } = ChatState();
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   return (
     <>
@@ -70,7 +84,30 @@ const Messages = ({ msgs }) => {
                     )
                   ) : (
                     <>
-                      <Image boxSize="200px" src={msg.images[0]} alt="media" />
+                      <Image
+                        boxSize="200px"
+                        onClick={onOpen}
+                        src={msg.images[0]}
+                        alt="media"
+                      />
+                      <Modal onClose={onClose} size={"full"} isOpen={isOpen}>
+                        <ModalOverlay />
+                        <ModalContent>
+                          <ModalHeader>Image</ModalHeader>
+                          <ModalCloseButton size={"lg"} />
+                          <ModalBody
+                            display={"flex"}
+                            justifyContent={"center"}
+                            alignItems={"center"}
+                          >
+                            <Image
+                              boxSize="700px"
+                              src={msg.images[0]}
+                              alt="media"
+                            />
+                          </ModalBody>
+                        </ModalContent>
+                      </Modal>
                     </>
                   )}
                 </span>

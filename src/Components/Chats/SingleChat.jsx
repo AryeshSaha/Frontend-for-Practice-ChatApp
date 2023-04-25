@@ -177,15 +177,15 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     });
 
     // Check whether browser supports notifications
-    if (!("Notification" in window)) {
-      // Ask for permission
-      Notification.requestPermission();
-      // .then(function (permission) {
-      //   if (permission === "granted") {
-      //     console.log("Permission to show notifications granted!");
-      //   }
-      // });
-    }
+    // if (!("Notification" in window)) {
+    // }
+    // Ask for permission
+    Notification.requestPermission();
+    // .then(function (permission) {
+    //   if (permission === "granted") {
+    //     console.log("Permission to show notifications granted!");
+    //   }
+    // });
 
     // eslint-disable-next-line
   }, []);
@@ -387,6 +387,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
               <></>
             )}
 
+            {isTyping ? <Text color={colorMode}>typing...</Text> : <></>}
             <Box
               display={"flex"}
               justifyContent={"space-between"}
@@ -406,7 +407,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                 />
               </FormControl>
 
-              {isTyping ? <Text color={colorMode}>typing...</Text> : <></>}
               <FormControl
                 onKeyDown={sendMsg}
                 mt={3}
