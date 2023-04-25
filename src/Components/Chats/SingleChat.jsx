@@ -176,6 +176,17 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       setIsTyping(false);
     });
 
+    // Check whether browser supports notifications
+    if (!("Notification" in window)) {
+      // Ask for permission
+      Notification.requestPermission();
+      // .then(function (permission) {
+      //   if (permission === "granted") {
+      //     console.log("Permission to show notifications granted!");
+      //   }
+      // });
+    }
+
     // eslint-disable-next-line
   }, []);
 
@@ -186,13 +197,19 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   }, [selectedChat]);
 
   useEffect(() => {
+    socket.off("receiveMsg");
     socket.on("receiveMsg", (msg) => {
       if (!selectedChatCompare || selectedChatCompare._id !== msg.chat._id) {
         // give noti
         if (!notification.includes(msg)) {
           setNotification([msg, ...notification]);
           setFetchAgain(!fetchAgain);
-          console.log(`Message Received: ${msg.content}`);
+          if (Notification.permission === "granted") {
+            new Notification("New message received", {
+              body: "You have a new message from " + msg.sender.name,
+              icon: msg.sender.profilePic,
+            });
+          }
         }
       } else {
         setMsgs([...msgs, msg]);
@@ -357,8 +374,8 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
             {/* Preview Images */}
             {imgUrl ? (
-              <Box display={"flex"} justifyContent={'start'} alignItems={'end'} >
-                <Image boxSize={'100px'} src={imgUrl} alt="image" />
+              <Box display={"flex"} justifyContent={"start"} alignItems={"end"}>
+                <Image boxSize={"100px"} src={imgUrl} alt="image" />
                 <ArrowRightIcon
                   color={colorMode}
                   fontSize={"xl"}

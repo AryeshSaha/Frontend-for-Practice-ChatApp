@@ -17,3 +17,7 @@ MERN Stack Practice ChatApp made with socket.io
 -> react-notification-badge
 -> react-scrollable-feed
 -> socket.io-client
+
+# Tasks
+
+-> Create Modal for images and dps
