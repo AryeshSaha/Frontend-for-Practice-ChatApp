@@ -4,6 +4,6 @@ to = "/index.html"
 status = 200
 
 [[headers]]
-  for = "/*"
+  for = "/sw.js"
     [headers.values]
     Content-Type = "application/javascript"
