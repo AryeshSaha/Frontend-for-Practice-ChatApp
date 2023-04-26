@@ -6,4 +6,4 @@ status = 200
 [[headers]]
   for = "/*"
     [headers.values]
-    X-Content-Type-Options = "nosniff"
+    Content-Type = "application/javascript"
