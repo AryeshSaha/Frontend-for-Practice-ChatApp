@@ -8,6 +8,7 @@ export default defineConfig({
     // include: ['linked-dep'],
   },
   build: {
+    outDir: 'dist',
     commonjsOptions: {
       transformMixedEsModules: true,
       // include: [/linked-dep/, /node_modules/],
