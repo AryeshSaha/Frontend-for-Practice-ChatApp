@@ -160,6 +160,14 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     }
   };
 
+  const showNotification = (title, options) => {
+    if ('Notification' in window && Notification.permission === 'granted') {
+      navigator.serviceWorker.ready.then(registration => {
+        registration.showNotification(title, options);
+      });
+    }
+  }
+
   useEffect(() => {
     socket = io(url, { transports: ["websocket"], upgrade: false });
 
@@ -177,16 +185,19 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     });
 
     // Check whether browser supports notifications
-    // if (!("Notification" in window)) {
-    // }
-    // Ask for permission
-    Notification.requestPermission();
-    // .then(function (permission) {
-    //   if (permission === "granted") {
-    //     console.log("Permission to show notifications granted!");
-    //   }
-    // });
-
+    if ('Notification' in window) {
+      if (Notification.permission !== 'granted' && Notification.permission !== 'denied') {
+        // This code will request permission to show notifications if the user has not already granted or denied permission.
+        Notification.requestPermission().then(permission => {
+          if (permission === 'granted') {
+            console.log('Notification permission granted');
+          } else {
+            console.log('Notification permission denied');
+          }
+        });
+      }
+    }
+  
     // eslint-disable-next-line
   }, []);
 
@@ -205,7 +216,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
           setNotification([msg, ...notification]);
           setFetchAgain(!fetchAgain);
           if (Notification.permission === "granted") {
-            new Notification("New message received", {
+            showNotification("New message received", {
               body: "You have a new message from " + msg.sender.name,
               icon: msg.sender.profilePic,
             });
