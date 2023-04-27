@@ -21,6 +21,7 @@ import axios from "axios";
 import { useEffect } from "react";
 import Messages from "../Messages/Messages";
 import { io } from "socket.io-client";
+import Compressor from "compressorjs";
 
 var socket, selectedChatCompare;
 
@@ -42,8 +43,11 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   // input of every single new msg
   const [newMsg, setNewMsg] = useState("");
   // input of every single new img
-  const [newImg, setNewImg] = useState(null);
-  const [imgUrl, setImgUrl] = useState("");
+  const [newImg, setNewImg] = useState([]);
+  // for previewing the images
+  const [imgUrl, setImgUrl] = useState([]);
+  // for sending to the back
+  const urls = []
   // to keep the messages
   const [msgs, setMsgs] = useState([]);
   // to change typing state from client 1 to server
@@ -161,12 +165,12 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   };
 
   const showNotification = (title, options) => {
-    if ('Notification' in window && Notification.permission === 'granted') {
-      navigator.serviceWorker.ready.then(registration => {
+    if ("Notification" in window && Notification.permission === "granted") {
+      navigator.serviceWorker.ready.then((registration) => {
         registration.showNotification(title, options);
       });
     }
-  }
+  };
 
   useEffect(() => {
     socket = io(url, { transports: ["websocket"], upgrade: false });
@@ -185,19 +189,16 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     });
 
     // Check whether browser supports notifications
-    if ('Notification' in window) {
-      if (Notification.permission !== 'granted' && Notification.permission !== 'denied') {
+    if ("Notification" in window) {
+      if (
+        Notification.permission !== "granted" &&
+        Notification.permission !== "denied"
+      ) {
         // This code will request permission to show notifications if the user has not already granted or denied permission.
-        Notification.requestPermission().then(permission => {
-          if (permission === 'granted') {
-            console.log('Notification permission granted');
-          } else {
-            console.log('Notification permission denied');
-          }
-        });
+        Notification.requestPermission()
       }
     }
-  
+
     // eslint-disable-next-line
   }, []);
 
@@ -216,7 +217,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
           setNotification([msg, ...notification]);
           setFetchAgain(!fetchAgain);
           if (Notification.permission === "granted") {
-            showNotification("New message received", {
+            showNotification("New message", {
               body: "You have a new message from " + msg.sender.name,
               icon: msg.sender.profilePic,
             });
@@ -261,25 +262,50 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   // then try the same for multiple images
 
   const handleImg = (e) => {
-    setNewImg(e.target.files[0]);
-    setImgUrl(URL.createObjectURL(e.target.files[0]));
+    setNewImg(e.target.files);
+    const files = Array.from(e.target.files);
+    if (files.length) {
+      files.forEach((file) => {
+        const url = URL.createObjectURL(file);
+        setImgUrl((prev) => [...prev, url]);
+      });
+    }
   };
 
+  // const handleCompresso = () => {
+  //   newImg.map((img) => {
+  //     new Compressor(img, {
+  //       quality: 0.6,
+  //       success: (compressedImage) => {
+  //         sendImg(compressedImage);
+  //       },
+  //       error: (error) => {
+  //       },
+  //     });
+  //   });
+  //   setNewImg([]);
+  //   setImgUrl([]);
+  //   document.querySelector("#pics").value = "";
+  // };
+
   const sendImg = async () => {
-    if (newImg) {
-      const formData = new FormData();
+    if (newImg.length) {
+      setNewImg([]);
+      setImgUrl([]);
+      for (let i = 0; i < newImg.length; i++) {
+        const formData = new FormData();
+        formData.append("file", newImg[i]);
+        formData.append("upload_preset", "chat-app");
+        formData.append("folder", `ChatMedia/${selectedChat._id}`);
 
-      formData.append("file", newImg);
-      formData.append("upload_preset", "chat-app");
-      formData.append("folder", `ChatMedia/${selectedChat._id}`);
-
-      try {
         const res = await axios.post(
           "https://api.cloudinary.com/v1_1/aryesh/image/upload",
           formData
         );
-        setNewImg(null);
 
+        urls.push(res?.data?.secure_url)
+      }
+      try {
         const config = {
           headers: {
             "Content-type": "application/json",
@@ -290,7 +316,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         const { data } = await axios.post(
           `${url}/api/msg`,
           {
-            image: res?.data?.secure_url,
+            image: urls,
             chatId: selectedChat._id,
           },
           config
@@ -300,8 +326,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         socket.emit("sendMsg", data);
 
         setMsgs([...msgs, data]);
-
-        setImgUrl("");
       } catch (error) {
         toast({
           title: "Error Occured!",
@@ -313,6 +337,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         });
       }
     }
+    document.getElementById("pics").value = "";
   };
 
   return (
@@ -384,9 +409,11 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
             )}
 
             {/* Preview Images */}
-            {imgUrl ? (
+            {imgUrl.length ? (
               <Box display={"flex"} justifyContent={"start"} alignItems={"end"}>
-                <Image boxSize={"100px"} src={imgUrl} alt="image" />
+                {imgUrl.map((url) => (
+                  <Image key={url} boxSize={"100px"} src={url} alt="image" />
+                ))}
                 <ArrowRightIcon
                   color={colorMode}
                   fontSize={"xl"}
@@ -406,12 +433,13 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
             >
               {/* Image Input */}
               <FormControl w={"auto"}>
-                <FormLabel htmlFor="dp" w={"auto"} mt={3} me={4}>
+                <FormLabel htmlFor="pics" w={"auto"} mt={3} me={4}>
                   <AddIcon fontSize={"20px"} />
                 </FormLabel>
                 <Input
                   type="file"
-                  id="dp"
+                  id="pics"
+                  multiple
                   accept="image/*"
                   display={"none"}
                   onChange={handleImg}

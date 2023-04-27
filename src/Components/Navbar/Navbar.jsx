@@ -100,15 +100,10 @@ const Navbar = () => {
         isClosable: true,
         position: "bottom-left",
       });
-      console.log("====================================");
-      console.log(error);
-      console.log("====================================");
     }
   };
 
   const accessChat = async (userId) => {
-    console.log(userId);
-
     try {
       setLoadingChat(true);
       const config = {
@@ -133,7 +128,6 @@ const Navbar = () => {
         isClosable: true,
         position: "bottom-left",
       });
-      console.log(error);
     }
   };
 

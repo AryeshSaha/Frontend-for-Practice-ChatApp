@@ -21,17 +21,23 @@ import {
   isSameSenderMargin,
   isSameUser,
 } from "../../config/ChatLogics";
+import { useState } from "react";
 
 const Messages = ({ msgs }) => {
   const { user } = ChatState();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const [selectedImageUrl, setSelectedImageUrl] = useState("");
+
+  const handleImgClick = (link) => {
+    onOpen();
+    setSelectedImageUrl((prev) => (prev === link ? "" : link));
+  };
 
   return (
     <>
       <ScrollableFeed>
         {msgs &&
           msgs.map((msg, i) => {
-            // console.log("msg: ", msg);
             return (
               <div
                 key={msg._id}
@@ -75,6 +81,8 @@ const Messages = ({ msgs }) => {
                           boxSize="200px"
                           src={msg.images[0]}
                           alt="media"
+                          mt={3}
+                          p={3}
                         />
                       </>
                     ) : (
@@ -84,30 +92,41 @@ const Messages = ({ msgs }) => {
                     )
                   ) : (
                     <>
-                      <Image
-                        boxSize="200px"
-                        onClick={onOpen}
-                        src={msg.images[0]}
-                        alt="media"
-                      />
-                      <Modal onClose={onClose} size={"full"} isOpen={isOpen}>
-                        <ModalOverlay />
-                        <ModalContent>
-                          <ModalHeader>Image</ModalHeader>
-                          <ModalCloseButton size={"lg"} />
-                          <ModalBody
-                            display={"flex"}
-                            justifyContent={"center"}
-                            alignItems={"center"}
-                          >
+                      {msg.images.length &&
+                        msg.images.map((link, index) => (
+                          <div key={index}>
                             <Image
-                              boxSize="700px"
-                              src={msg.images[0]}
+                              boxSize="200px"
+                              onClick={() => handleImgClick(link)}
+                              src={link}
                               alt="media"
+                              mt={3}
                             />
-                          </ModalBody>
-                        </ModalContent>
-                      </Modal>
+                            <Modal
+                              onClose={onClose}
+                              size={"full"}
+                              isOpen={isOpen}
+                            >
+                              <ModalOverlay />
+                              <ModalContent>
+                                <ModalHeader>Image</ModalHeader>
+                                <ModalCloseButton size={"lg"} />
+                                <ModalBody
+                                  display={"flex"}
+                                  justifyContent={"center"}
+                                  alignItems={"center"}
+                                >
+                                  <Image
+                                    // boxSize={[ "auto", "50%", "40%" ]}
+                                    src={selectedImageUrl}
+                                    alt="media"
+                                    objectFit="cover"
+                                  />
+                                </ModalBody>
+                              </ModalContent>
+                            </Modal>
+                          </div>
+                        ))}
                     </>
                   )}
                 </span>
