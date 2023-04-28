@@ -20,7 +20,7 @@ import UpdateGroupChatModal from "../Misc/Group Chat Modals/UpdateGroupChatModal
 import axios from "axios";
 import { useEffect } from "react";
 import Messages from "../Messages/Messages";
-import { io } from "socket.io-client";
+import io from "socket.io-client";
 import Compressor from "compressorjs";
 
 var socket, selectedChatCompare;
@@ -266,8 +266,8 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     const files = Array.from(e.target.files);
     if (files.length) {
       files.forEach((file) => {
-        const url = URL.createObjectURL(file);
-        setImgUrl((prev) => [...prev, url]);
+        const link = URL.createObjectURL(file);
+        setImgUrl((prev) => [...prev, link]);
       });
     }
   };
@@ -283,9 +283,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   //       },
   //     });
   //   });
-  //   setNewImg([]);
-  //   setImgUrl([]);
-  //   document.querySelector("#pics").value = "";
   // };
 
   const sendImg = async () => {

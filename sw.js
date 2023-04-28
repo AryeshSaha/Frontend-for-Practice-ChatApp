@@ -1,6 +1,6 @@
-self.addEventListener("push", (event) => {
-
-  const data = event.data.json();
+self.addEventListener("push", (e) => {
+  console.log("Service worker loaded");
+  const data = e.data.json();
 
   const title = data.title;
   const options = {
@@ -8,5 +8,5 @@ self.addEventListener("push", (event) => {
     icon: data.icon,
   };
 
-  event.waitUntil(self.registration.showNotification(title, options));
+  e.waitUntil(self.registration.showNotification(title, options));
 });

@@ -7,13 +7,6 @@ import { Box, useColorMode } from "@chakra-ui/react";
 function App() {
   const { colorMode } = useColorMode();
 
-  // service worker registration
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('../sw.js')
-    });
-  }  
-
   return (
     <Box className="App" bgColor={ colorMode } >
       <Routes>
