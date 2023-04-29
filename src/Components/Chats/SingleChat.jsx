@@ -47,7 +47,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   // for previewing the images
   const [imgUrl, setImgUrl] = useState([]);
   // for sending to the back
-  const urls = []
+  const urls = [];
   // to keep the messages
   const [msgs, setMsgs] = useState([]);
   // to change typing state from client 1 to server
@@ -195,7 +195,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         Notification.permission !== "denied"
       ) {
         // This code will request permission to show notifications if the user has not already granted or denied permission.
-        Notification.requestPermission()
+        Notification.requestPermission();
       }
     }
 
@@ -272,26 +272,17 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     }
   };
 
-  // const handleCompresso = () => {
-  //   newImg.map((img) => {
-  //     new Compressor(img, {
-  //       quality: 0.6,
-  //       success: (compressedImage) => {
-  //         sendImg(compressedImage);
-  //       },
-  //       error: (error) => {
-  //       },
-  //     });
-  //   });
-  // };
-
   const sendImg = async () => {
     if (newImg.length) {
       setNewImg([]);
       setImgUrl([]);
       for (let i = 0; i < newImg.length; i++) {
+        const blob = await compressImage(newImg[i]);
+        console.log("blob: ", blob);
+        console.log("newImg: ", newImg[i]);
+
         const formData = new FormData();
-        formData.append("file", newImg[i]);
+        formData.append("file", blob);
         formData.append("upload_preset", "chat-app");
         formData.append("folder", `ChatMedia/${selectedChat._id}`);
 
@@ -300,7 +291,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
           formData
         );
 
-        urls.push(res?.data?.secure_url)
+        urls.push(res?.data?.secure_url);
       }
       try {
         const config = {
@@ -337,6 +328,22 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     document.getElementById("pics").value = "";
   };
 
+  const compressImage = (file) => {
+    return new Promise((resolve, reject) => {
+      new Compressor(file, {
+        maxWidth: 800,
+        maxHeight: 800,
+        quality: 0.8,
+        success: (result) => {
+          resolve(result);
+        },
+        error: (err) => {
+          reject(err);
+        },
+      });
+    });
+  };
+
   return (
     <>
       {selectedChat ? (
@@ -359,7 +366,9 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
             {!selectedChat.isGroupChat ? (
               <>
                 {_.startCase(getSender(user, selectedChat.users))}
-                <ProfileModal user={getSenderFull(user, selectedChat.users)} />
+                <ProfileModal
+                  profile={getSenderFull(user, selectedChat.users)}
+                />
               </>
             ) : (
               <>

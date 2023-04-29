@@ -22,12 +22,12 @@ import axios from "axios";
 import { useState } from "react";
 import { ChatState } from "../../../Context/ChatProvider";
 
-const ProfileModal = ({ user, children }) => {
+const ProfileModal = ({ profile, children }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [dpInput, setDpInput] = useState(false);
   const [dpUrl, setDpUrl] = useState("");
   const [dp, setDp] = useState(null);
-  const { url, setUser } = ChatState();
+  const { url, user, setUser } = ChatState();
   const toast = useToast();
 
   const handleDPChange = (e) => {
@@ -40,7 +40,7 @@ const ProfileModal = ({ user, children }) => {
 
     formData.append("file", dp);
     formData.append("upload_preset", "chat-app");
-    formData.append("folder", `ProfilePics/${user?.email}`);
+    formData.append("folder", `ProfilePics/${profile?.email}`);
 
     try {
       const res = await axios.post(
@@ -52,7 +52,7 @@ const ProfileModal = ({ user, children }) => {
       const config = {
         headers: {
           "Content-type": "application/json",
-          Authorization: `Bearer ${user.token}`,
+          Authorization: `Bearer ${profile.token}`,
         },
       };
 
@@ -92,11 +92,7 @@ const ProfileModal = ({ user, children }) => {
       {children ? (
         <span onClick={onOpen}>{children}</span>
       ) : (
-        <IconButton
-          display="flex"
-          icon={<ViewIcon />}
-          onClick={onOpen}
-        />
+        <IconButton display="flex" icon={<ViewIcon />} onClick={onOpen} />
       )}
       <Modal
         size="lg"
@@ -111,7 +107,7 @@ const ProfileModal = ({ user, children }) => {
         />
         <ModalContent h="auto">
           <ModalHeader fontSize="40px" display="flex" justifyContent="center">
-            {user?.name}
+            {profile?.name}
           </ModalHeader>
           <ModalCloseButton />
           <ModalBody
@@ -123,8 +119,8 @@ const ProfileModal = ({ user, children }) => {
             <Image
               borderRadius="full"
               boxSize="150px"
-              src={dpUrl ? dpUrl : user?.profilePic}
-              alt={user?.name}
+              src={dpUrl ? dpUrl : profile?.profilePic}
+              alt={profile?.name}
             />
             <FormControl
               display={"flex"}
@@ -155,33 +151,40 @@ const ProfileModal = ({ user, children }) => {
               />
             </FormControl>
 
-            <Box
-              display={"flex"}
-              justifyContent={"space-evenly"}
-              alignItems={"center"}
-            >
-              <Button
-                variant={"outline"}
-                colorScheme="messenger"
-                mt={2}
-                mx={3}
-                onClick={dpHandler}
-                display={!dpInput ? "none" : ""}
-              >
-                Save
-              </Button>
-              <Button
-                variant={"outline"}
-                colorScheme="messenger"
-                mx={3}
-                mt={2}
-                onClick={() => setDpInput(!dpInput)}
-              >
-                {!dpInput ? "Upload" : "Cancel"}
-              </Button>
-            </Box>
+            {profile?._id === user?._id ? (
+              <>
+                <Box
+                  display={"flex"}
+                  justifyContent={"space-evenly"}
+                  alignItems={"center"}
+                >
+                  <Button
+                    variant={"outline"}
+                    colorScheme="messenger"
+                    mt={2}
+                    mx={3}
+                    onClick={dpHandler}
+                    display={!dpInput ? "none" : ""}
+                  >
+                    Save
+                  </Button>
+                  <Button
+                    variant={"outline"}
+                    colorScheme="messenger"
+                    mx={3}
+                    mt={2}
+                    onClick={() => setDpInput(!dpInput)}
+                  >
+                    {!dpInput ? "Upload" : "Cancel"}
+                  </Button>
+                </Box>
+              </>
+            ) : (
+              <></>
+            )}
+
             <Text fontSize={{ base: "28px", md: "30px" }}>
-              Email: {user?.email}
+              Email: {profile?.email}
             </Text>
           </ModalBody>
           <ModalFooter>
