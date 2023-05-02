@@ -252,15 +252,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     }, timer);
   };
 
-  // Task for single image first
-  // Upload button
-  // Preview for the selected image
-  // Add caption for the selected image in the preview tab to send with the image
-  // upload to cloudinary folder
-  // send secure_url of that image to the server
-  // access and display the image in the chat in some way
-  // then try the same for multiple images
-
   const handleImg = (e) => {
     setNewImg(e.target.files);
     const files = Array.from(e.target.files);

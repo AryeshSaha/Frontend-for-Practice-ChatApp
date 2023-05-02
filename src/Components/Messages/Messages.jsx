@@ -56,7 +56,7 @@ const Messages = ({ msgs }) => {
                       size="sm"
                       cursor="pointer"
                       name={msg.sender.name}
-                      src={msg.sender.pic}
+                      src={msg.sender.profilePic}
                     />
                   </Tooltip>
                 )}

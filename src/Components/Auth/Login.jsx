@@ -14,7 +14,7 @@ import { useNavigate } from "react-router-dom";
 import { ChatState } from "../../Context/ChatProvider";
 
 const Login = () => {
-  const { url } = ChatState()
+  const { url } = ChatState();
   const [email, setEmail] = useState("");
   const [pass, setPass] = useState("");
   const [show, setShow] = useState(false);
@@ -58,6 +58,16 @@ const Login = () => {
         title: "Login Successful",
         status: "success",
         duration: 5000,
+        isClosable: true,
+        position: "bottom",
+      });
+
+      toast({
+        title: "Notification Permission",
+        description:
+          "Please allow notification from site settings to get notified about incoming messages while you're away",
+        status: "info",
+        duration: 9000,
         isClosable: true,
         position: "top",
       });
