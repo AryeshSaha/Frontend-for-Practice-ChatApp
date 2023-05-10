@@ -13,8 +13,16 @@ const MyChats = ({ fetchAgain }) => {
   const { colorMode } = useColorMode();
   const [loggedUser, setLoggedUser] = useState();
 
-  const { url, selectedChat, setSelectedChat, user, chats, setChats } =
-    ChatState();
+  const {
+    url,
+    selectedChat,
+    setSelectedChat,
+    user,
+    chats,
+    setChats,
+    notification,
+    setNotification,
+  } = ChatState();
 
   const toast = useToast();
 
@@ -46,6 +54,12 @@ const MyChats = ({ fetchAgain }) => {
     fetchChats();
     // eslint-disable-next-line
   }, [fetchAgain]);
+
+  const notiUpdater = (chat) => {
+    setSelectedChat(chat);
+    const notis = notification.filter(noti => noti.chat._id !== chat._id)
+    setNotification(notis)
+  };
 
   return (
     <Box
@@ -94,7 +108,7 @@ const MyChats = ({ fetchAgain }) => {
           <Stack overflowY="scroll">
             {chats.map((chat) => (
               <Box
-                onClick={() => setSelectedChat(chat)}
+                onClick={() => notiUpdater(chat)}
                 cursor="pointer"
                 bg={selectedChat === chat ? "#38B2AC" : "#e9e9e9"}
                 color={selectedChat === chat ? "white" : "black"}

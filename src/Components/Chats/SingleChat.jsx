@@ -14,7 +14,7 @@ import {
   Image,
 } from "@chakra-ui/react";
 import _ from "lodash";
-import { getSender, getSenderFull } from "../../config/ChatLogics";
+import { getSender } from "../../config/ChatLogics";
 import ProfileModal from "../Misc/ProfileModal/ProfileModal";
 import UpdateGroupChatModal from "../Misc/Group Chat Modals/UpdateGroupChatModal";
 import axios from "axios";
@@ -22,6 +22,7 @@ import { useEffect } from "react";
 import Messages from "../Messages/Messages";
 import io from "socket.io-client";
 import Compressor from "compressorjs";
+import { GoPrimitiveDot } from "react-icons/go";
 
 var socket, selectedChatCompare;
 
@@ -54,6 +55,45 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const [typing, setTyping] = useState(false);
   // to display changed typing state from server to client 2
   const [isTyping, setIsTyping] = useState(false);
+  // store sender Info
+  const [profile, setProfile] = useState();
+
+  const fetchStatus = async () => {
+    if (!selectedChat) return;
+    try {
+      const config = {
+        headers: {
+          "Content-type": "application/json",
+          Authorization: `Bearer ${user.token}`,
+        },
+      };
+      let senderId;
+      if (!selectedChat.isGroup && selectedChat?.users[0]._id !== user._id) {
+        senderId = selectedChat?.users[0]._id;
+      } else {
+        senderId = selectedChat?.users[1]._id;
+      }
+
+      const { data } = await axios.post(
+        `${url}/api/user/fetchInfo`,
+        {
+          userId: senderId,
+        },
+        config
+      );
+
+      setProfile(data);
+    } catch (error) {
+      toast({
+        title: "Error Occured!",
+        description: "Failed to send the Message",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom",
+      });
+    }
+  };
 
   const fetchMessages = async () => {
     if (!selectedChat) return;
@@ -177,8 +217,13 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
     socket.emit("setup", user);
 
-    socket.on("connected", () => {
+    socket.on("connected", ({ userId, isOnline }) => {
       setSocketCon(true);
+      if (isOnline) console.log(`${userId} is online`);
+    });
+
+    socket.on("disconnected", ({ userId, isOnline }) => {
+      if (!isOnline) console.log(`${userId} is offline`);
     });
 
     socket.on("typing", () => {
@@ -203,6 +248,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   }, []);
 
   useEffect(() => {
+    fetchStatus();
     fetchMessages();
     selectedChatCompare = selectedChat;
     // eslint-disable-next-line
@@ -227,6 +273,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         setMsgs([...msgs, msg]);
       }
     });
+    // eslint-disable-next-line
   });
 
   const typingHandler = (e) => {
@@ -339,7 +386,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     <>
       {selectedChat ? (
         <>
-          <Text
+          <Box
             fontSize={{ base: "28px", md: "30px" }}
             pb={3}
             px={2}
@@ -355,12 +402,28 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
               onClick={() => setSelectedChat("")}
             />
             {!selectedChat.isGroupChat ? (
-              <>
-                {_.startCase(getSender(user, selectedChat.users))}
-                <ProfileModal
-                  profile={getSenderFull(user, selectedChat.users)}
-                />
-              </>
+              <Box
+                display={"flex"}
+                justifyContent={"space-between"}
+                w={"100%"}
+                ps={5}
+              >
+                <Box
+                  display={"flex"}
+                  alignItems={"center"}
+                  justifyContent={"space-evenly"}
+                >
+                  <Text>
+                    {_.startCase(getSender(user, selectedChat.users))}
+                  </Text>
+                  {profile?.isOnline ? (
+                    <GoPrimitiveDot size={20} color="#00ff00" />
+                  ) : (
+                    <GoPrimitiveDot size={20} color="gray" />
+                  )}
+                </Box>
+                <ProfileModal profile={profile} />
+              </Box>
             ) : (
               <>
                 {_.startCase(selectedChat.chatName)}
@@ -371,7 +434,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                 />
               </>
             )}
-          </Text>
+          </Box>
           <Divider orientation="horizontal" />
           <Box
             display={"flex"}

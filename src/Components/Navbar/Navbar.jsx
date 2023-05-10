@@ -58,9 +58,40 @@ const Navbar = () => {
   const navigate = useNavigate();
   const toast = useToast();
 
-  const logoutHandler = () => {
-    localStorage.removeItem("userInfo");
-    navigate("/");
+  const logoutHandler = async () => {
+    if (user.isOnline) {
+      try {
+        const config = {
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+          },
+        };
+        const { data } = await axios.get(
+          `${url}/api/user/logout`,
+          config
+        );
+        if (!data.isOnline) {
+          localStorage.removeItem("userInfo");
+          toast({
+            title: "Logout Successful",
+            status: "success",
+            duration: 5000,
+            isClosable: true,
+            position: "bottom",
+          });
+          navigate("/");
+        }
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: error.message,
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+          position: "bottom-left",
+        });
+      }
+    }
   };
 
   const handleSearch = async () => {
@@ -143,11 +174,7 @@ const Navbar = () => {
       >
         {/* Search Component */}
         <Tooltip label="Search Users to chat" hasArrow placement="bottom-end">
-          <Button
-            variant="ghost"
-            onClick={onOpen}
-            color={colorMode}
-          >
+          <Button variant="ghost" onClick={onOpen} color={colorMode}>
             <Search2Icon />
             <Text d={{ base: "none", md: "flex" }} px={4}>
               Search User
@@ -157,7 +184,7 @@ const Navbar = () => {
 
         {/* App Title */}
         <Text display={{ base: "none", md: "flex" }} fontSize="xl">
-          Practice ChatApp
+          Chat-A-Lot
         </Text>
 
         {/* Menu */}
@@ -168,14 +195,14 @@ const Navbar = () => {
               onClick={toggleColorMode}
               fontSize={"1.5rem"}
               p={1}
-              mr={{base: '2', md: '4'}}
+              mr={{ base: "2", md: "4" }}
             >
               {colorMode === "dark" ? <SunIcon mt={1} /> : <MoonIcon mt={1} />}
             </MenuButton>
           </Menu>
           <Menu>
             {/* Notification */}
-            <MenuButton p={1} mr={{base: '1', md: '3'}}>
+            <MenuButton p={1} mr={{ base: "1", md: "3" }}>
               <NotificationBadge
                 count={notification.length}
                 effect={Effect.SCALE}
@@ -211,7 +238,7 @@ const Navbar = () => {
               />
             </MenuButton>
             <MenuList>
-              <ProfileModal profile={user} >
+              <ProfileModal profile={user}>
                 <MenuItem>My Profile</MenuItem>
               </ProfileModal>
               <MenuDivider />
@@ -227,7 +254,9 @@ const Navbar = () => {
         <Drawer placement="left" onClose={onClose} isOpen={isOpen}>
           <DrawerOverlay />
           <DrawerContent>
-            <DrawerHeader borderBottomWidth="1px" onClick={onClose} >Search Users</DrawerHeader>
+            <DrawerHeader borderBottomWidth="1px" onClick={onClose}>
+              Search Users
+            </DrawerHeader>
             <DrawerBody>
               <Box display="flex" pb={2}>
                 <Input
