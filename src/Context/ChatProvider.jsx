@@ -1,22 +1,26 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
+import io from "socket.io-client";
 import { useNavigate } from "react-router-dom";
 
 const ChatContext = createContext();
+var socket;
 
 const ChatProvider = ({ children }) => {
   const ColorW = "white";
   const ColorB = "black";
-  // const url = "http://127.0.0.1:4000";
-  const url = "https://backend-practice-chat-app.onrender.com";
+  const url = "http://127.0.0.1:4000";
+  // const url = "https://backend-practice-chat-app.onrender.com";
   const [user, setUser] = useState();
   const [selectedChat, setSelectedChat] = useState();
   const [chats, setChats] = useState();
   const [notification, setNotification] = useState([]);
+  const [onlineUsers, setOnlineUsers] = useState([]);
 
   const navigate = useNavigate();
 
   useEffect(() => {
     const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+    socket = io(url, { transports: ["websocket"], upgrade: false });
     setUser(userInfo);
 
     if (!userInfo) navigate("/");
@@ -26,6 +30,7 @@ const ChatProvider = ({ children }) => {
   return (
     <ChatContext.Provider
       value={{
+        socket,
         url,
         user,
         setUser,
@@ -35,6 +40,8 @@ const ChatProvider = ({ children }) => {
         setChats,
         notification,
         setNotification,
+        onlineUsers,
+        setOnlineUsers,
         ColorW,
         ColorB,
       }}

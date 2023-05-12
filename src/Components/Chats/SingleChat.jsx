@@ -14,27 +14,30 @@ import {
   Image,
 } from "@chakra-ui/react";
 import _ from "lodash";
-import { getSender } from "../../config/ChatLogics";
+import { getSender, getSenderId } from "../../config/ChatLogics";
 import ProfileModal from "../Misc/ProfileModal/ProfileModal";
 import UpdateGroupChatModal from "../Misc/Group Chat Modals/UpdateGroupChatModal";
 import axios from "axios";
 import { useEffect } from "react";
 import Messages from "../Messages/Messages";
-import io from "socket.io-client";
 import Compressor from "compressorjs";
 import { GoPrimitiveDot } from "react-icons/go";
 
-var socket, selectedChatCompare;
+var selectedChatCompare;
 
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const { colorMode } = useColorMode();
   const {
+    socket,
     url,
     user,
+    setUser,
     selectedChat,
     setSelectedChat,
     notification,
     setNotification,
+    onlineUsers,
+    setOnlineUsers,
   } = ChatState();
   const toast = useToast();
 
@@ -213,17 +216,22 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   };
 
   useEffect(() => {
-    socket = io(url, { transports: ["websocket"], upgrade: false });
-
     socket.emit("setup", user);
 
-    socket.on("connected", ({ userId, isOnline }) => {
+    socket.on("connected", ({ userId, isOnline, onlineUsers }) => {
       setSocketCon(true);
-      if (isOnline) console.log(`${userId} is online`);
+      if (isOnline) {
+        console.log("Online Users: ", onlineUsers);
+        setOnlineUsers(onlineUsers);
+      }
     });
 
-    socket.on("disconnected", ({ userId, isOnline }) => {
-      if (!isOnline) console.log(`${userId} is offline`);
+    socket.on("disconnected", ({ userId, isOnline, onlineUsers }) => {
+      setSocketCon(false);
+      if (!isOnline) {
+        console.log("Online Users: ", onlineUsers);
+        setOnlineUsers(onlineUsers);
+      }
     });
 
     socket.on("typing", () => {
@@ -416,8 +424,11 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                   <Text>
                     {_.startCase(getSender(user, selectedChat.users))}
                   </Text>
-                  {profile?.isOnline ? (
-                    <GoPrimitiveDot size={20} color="#00ff00" />
+                  {onlineUsers.find((u) => {
+                    if (u.userId === getSenderId(user, selectedChat.users))
+                      return true;
+                  }) ? (
+                    <GoPrimitiveDot size={20} color="#00a700" />
                   ) : (
                     <GoPrimitiveDot size={20} color="gray" />
                   )}

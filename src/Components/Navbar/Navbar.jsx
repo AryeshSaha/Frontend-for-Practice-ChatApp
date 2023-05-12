@@ -47,6 +47,7 @@ const Navbar = () => {
   const [loading, setLoading] = useState(false);
   const [loadingChat, setLoadingChat] = useState();
   const {
+    socket,
     user,
     url,
     setSelectedChat,
@@ -61,26 +62,18 @@ const Navbar = () => {
   const logoutHandler = async () => {
     if (user.isOnline) {
       try {
-        const config = {
-          headers: {
-            Authorization: `Bearer ${user.token}`,
-          },
-        };
-        const { data } = await axios.get(
-          `${url}/api/user/logout`,
-          config
-        );
-        if (!data.isOnline) {
-          localStorage.removeItem("userInfo");
-          toast({
-            title: "Logout Successful",
-            status: "success",
-            duration: 5000,
-            isClosable: true,
-            position: "bottom",
-          });
-          navigate("/");
-        }
+        setChats([]);
+        setNotification([]);
+        localStorage.removeItem("userInfo");
+        toast({
+          title: "Logout Successful",
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+          position: "bottom",
+        });
+        socket.emit("logout", user._id);
+        navigate("/");
       } catch (error) {
         toast({
           title: "Error",

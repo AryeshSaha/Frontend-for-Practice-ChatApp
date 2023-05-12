@@ -4,10 +4,11 @@ import { useToast } from "@chakra-ui/toast";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Button, useColorMode, Divider } from "@chakra-ui/react";
-import { getSender } from "../../config/ChatLogics";
+import { getSender, getSenderId } from "../../config/ChatLogics";
 import ChatLoading from "../Misc/Chat Loading/ChatLoading";
 import { ChatState } from "../../Context/ChatProvider";
 import GroupChatModal from "../Misc/Group Chat Modals/GroupChatModal";
+import { GoPrimitiveDot } from "react-icons/go";
 
 const MyChats = ({ fetchAgain }) => {
   const { colorMode } = useColorMode();
@@ -22,6 +23,7 @@ const MyChats = ({ fetchAgain }) => {
     setChats,
     notification,
     setNotification,
+    onlineUsers,
   } = ChatState();
 
   const toast = useToast();
@@ -57,8 +59,8 @@ const MyChats = ({ fetchAgain }) => {
 
   const notiUpdater = (chat) => {
     setSelectedChat(chat);
-    const notis = notification.filter(noti => noti.chat._id !== chat._id)
-    setNotification(notis)
+    const notis = notification.filter((noti) => noti.chat._id !== chat._id);
+    setNotification(notis);
   };
 
   return (
@@ -117,10 +119,21 @@ const MyChats = ({ fetchAgain }) => {
                 borderRadius="lg"
                 key={chat._id}
               >
-                <Text>
+                <Text display={"flex"} alignItems={"center"}>
                   {!chat.isGroupChat
                     ? getSender(loggedUser, chat.users)
                     : chat.chatName}
+                  <GoPrimitiveDot
+                    size={20}
+                    color={
+                      onlineUsers.find((u) => {
+                        if (u.userId === getSenderId(loggedUser, chat.users))
+                          return true;
+                      })
+                        ? "#00a700"
+                        : "gray"
+                    }
+                  />
                 </Text>
                 {chat.lastMsg && (
                   <Text fontSize="xs">

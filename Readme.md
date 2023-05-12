@@ -20,4 +20,6 @@ MERN Stack Practice ChatApp made with socket.io
 
 # Tasks
 
--> Create Modal for images and dps
+-> Add last seen feat.
+-> Add message seen/unseen stat.
+-> Add dates and times when each message is being sent
