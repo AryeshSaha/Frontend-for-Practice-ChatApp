@@ -35,7 +35,7 @@ import { useNavigate } from "react-router-dom";
 import ChatLoading from "../Misc/Chat Loading/ChatLoading";
 import UserListItem from "../Misc/Users List Item/UserListItem";
 import axios from "axios";
-import { getSender } from "../../config/ChatLogics";
+import { getSenderName } from "../../config/ChatLogics";
 import NotificationBadge from "react-notification-badge/lib/components/NotificationBadge";
 import Effect from "react-notification-badge/lib/components/Effect";
 
@@ -214,7 +214,10 @@ const Navbar = () => {
                 >
                   {noti.chat?.isGroupChat
                     ? `New Message in ${noti.chat.chatName}`
-                    : `New Message from ${getSender(user, noti.chat.users)}`}
+                    : `New Message from ${getSenderName(
+                        user,
+                        noti.chat.users
+                      )}`}
                 </MenuItem>
               ))}
             </MenuList>

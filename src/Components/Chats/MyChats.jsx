@@ -4,7 +4,7 @@ import { useToast } from "@chakra-ui/toast";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Button, useColorMode, Divider } from "@chakra-ui/react";
-import { getSender, getSenderId } from "../../config/ChatLogics";
+import { getSenderId, getSenderName } from "../../config/ChatLogics";
 import ChatLoading from "../Misc/Chat Loading/ChatLoading";
 import { ChatState } from "../../Context/ChatProvider";
 import GroupChatModal from "../Misc/Group Chat Modals/GroupChatModal";
@@ -121,7 +121,7 @@ const MyChats = ({ fetchAgain }) => {
               >
                 <Text display={"flex"} alignItems={"center"}>
                   {!chat.isGroupChat
-                    ? getSender(loggedUser, chat.users)
+                    ? getSenderName(loggedUser, chat.users)
                     : chat.chatName}
                   <GoPrimitiveDot
                     size={20}

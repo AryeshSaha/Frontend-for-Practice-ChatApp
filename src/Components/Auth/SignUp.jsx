@@ -14,7 +14,7 @@ import { useNavigate } from "react-router-dom";
 import { ChatState } from "../../Context/ChatProvider";
 
 const SignUp = () => {
-  const { url } = ChatState()
+  const { url } = ChatState();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [pass, setPass] = useState("");

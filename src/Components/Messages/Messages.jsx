@@ -3,13 +3,11 @@ import ScrollableFeed from "react-scrollable-feed";
 import { ChatState } from "../../Context/ChatProvider";
 import {
   Avatar,
-  Button,
   Image,
   Modal,
   ModalBody,
   ModalCloseButton,
   ModalContent,
-  ModalFooter,
   ModalHeader,
   ModalOverlay,
   Tooltip,

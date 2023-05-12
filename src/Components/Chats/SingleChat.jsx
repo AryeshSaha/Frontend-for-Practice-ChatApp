@@ -14,7 +14,7 @@ import {
   Image,
 } from "@chakra-ui/react";
 import _ from "lodash";
-import { getSender, getSenderId } from "../../config/ChatLogics";
+import { getSenderId, getSenderName } from "../../config/ChatLogics";
 import ProfileModal from "../Misc/ProfileModal/ProfileModal";
 import UpdateGroupChatModal from "../Misc/Group Chat Modals/UpdateGroupChatModal";
 import axios from "axios";
@@ -31,7 +31,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     socket,
     url,
     user,
-    setUser,
     selectedChat,
     setSelectedChat,
     notification,
@@ -218,18 +217,18 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   useEffect(() => {
     socket.emit("setup", user);
 
-    socket.on("connected", ({ userId, isOnline, onlineUsers }) => {
+    socket.on("connected", ({ isOnline, onlineUsers }) => {
       setSocketCon(true);
       if (isOnline) {
-        console.log("Online Users: ", onlineUsers);
+        // console.log("Online Users: ", onlineUsers);
         setOnlineUsers(onlineUsers);
       }
     });
 
-    socket.on("disconnected", ({ userId, isOnline, onlineUsers }) => {
+    socket.on("disconnected", ({ isOnline, onlineUsers }) => {
       setSocketCon(false);
       if (!isOnline) {
-        console.log("Online Users: ", onlineUsers);
+        // console.log("Online Users: ", onlineUsers);
         setOnlineUsers(onlineUsers);
       }
     });
@@ -422,7 +421,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                   justifyContent={"space-evenly"}
                 >
                   <Text>
-                    {_.startCase(getSender(user, selectedChat.users))}
+                    {_.startCase(getSenderName(user, selectedChat.users))}
                   </Text>
                   {onlineUsers.find((u) => {
                     if (u.userId === getSenderId(user, selectedChat.users))

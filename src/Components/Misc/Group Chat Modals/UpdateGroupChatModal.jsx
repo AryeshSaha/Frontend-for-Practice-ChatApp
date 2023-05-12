@@ -227,11 +227,17 @@ const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain, fetchMessages }) => {
           </ModalHeader>
           <ModalCloseButton />
           <ModalBody display="flex" flexDir="column" alignItems="center">
-            <Text fontWeight={'500'} >
+            <Text fontWeight={"500"}>
               Admin:
               <Highlight
                 query={selectedChat.grpAdmin.name}
-                styles={{ ms: "2", px: "2", py: "1", rounded: "full", bg: "blackAlpha.200" }}
+                styles={{
+                  ms: "2",
+                  px: "2",
+                  py: "1",
+                  rounded: "full",
+                  bg: "blackAlpha.200",
+                }}
               >
                 {selectedChat.grpAdmin.name}
               </Highlight>

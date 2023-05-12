@@ -33,7 +33,7 @@ const Home = () => {
       <Container maxW={"xl"} centerContent>
         <Box
           display={"flex"}
-          flexDirection={'column'}
+          flexDirection={"column"}
           p={3}
           w={"100%"}
           m={"40px 0 15px 0"}
@@ -55,7 +55,9 @@ const Home = () => {
               />
             </Tooltip>
           </Box>
-          <Text display={'flex'} justifyContent={"center"} fontSize={"4xl"}>Chat-A-Lot</Text>
+          <Text display={"flex"} justifyContent={"center"} fontSize={"4xl"}>
+            Chat-A-Lot
+          </Text>
         </Box>
         <Box w={"100%"} p={4} borderRadius={"lg"} borderWidth={"1px"}>
           <Tabs isFitted variant="soft-rounded" colorScheme="messenger">
