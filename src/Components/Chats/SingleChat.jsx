@@ -60,6 +60,52 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   // store sender Info
   const [profile, setProfile] = useState();
 
+  // lastSeen logic
+  const [lastSeen, setLastSeen] = useState(null);
+  const [unit, setUnit] = useState(null);
+
+  const lastSeenStatus = (lastSeenAt) => {
+    const now = new Date();
+
+    const diffInMilli = now - lastSeenAt;
+    const diffInSex = Math.floor(diffInMilli / 1000);
+    const diffInMins = Math.floor(diffInSex / 60);
+    const diffInHrs = Math.floor(diffInMins / 60);
+    const diffInDays = Math.floor(diffInHrs / 24);
+    const diffInWeeks = Math.floor(diffInDays / 7)
+    const diffInMonths = Math.floor(diffInWeeks / 4)
+    const diffInYears = Math.floor(diffInMonths / 12)
+
+    if (diffInMilli >= 60) {
+      setLastSeen(diffInSex);
+      setUnit((unit) => diffInSex > 1 ? "secs" : "sec");
+    }
+    if (diffInSex >= 60) {
+      setLastSeen(diffInMins);
+      setUnit((unit) => diffInMins > 1 ? "mins" : "min");
+    }
+    if (diffInMins >= 60) {
+      setLastSeen(diffInHrs);
+      setUnit((unit) => diffInHrs > 1 ? "hours" : "hour");
+    }
+    if (diffInHrs >= 24) {
+      setLastSeen(diffInDays);
+      setUnit((unit) => diffInDays > 1 ? "days" : "day");
+    }
+    if (diffInDays >= 7) {
+      setLastSeen(diffInWeeks);
+      setUnit((unit) => diffInWeeks > 1 ? "weeks" : "week");
+    }
+    if (diffInWeeks >= 4) {
+      setLastSeen(diffInMonths);
+      setUnit((unit) => diffInMonths > 1 ? "months" : "month");
+    }
+    if (diffInMonths >= 12) {
+      setLastSeen(diffInYears);
+      setUnit((unit) => diffInYears > 1 ? "years" : "year");
+    }
+  };
+
   const fetchStatus = async () => {
     if (!selectedChat) return;
     try {
@@ -85,6 +131,8 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       );
 
       setProfile(data);
+      const date = new Date(data.lastSeen);
+      lastSeenStatus(date);
     } catch (error) {
       toast({
         title: "Error Occured!",
@@ -259,7 +307,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     fetchMessages();
     selectedChatCompare = selectedChat;
     // eslint-disable-next-line
-  }, [selectedChat]);
+  }, [selectedChat, onlineUsers]);
 
   useEffect(() => {
     socket.off("receiveMsg");
@@ -417,19 +465,43 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
               >
                 <Box
                   display={"flex"}
-                  alignItems={"center"}
-                  justifyContent={"space-evenly"}
+                  flexDirection={"column"}
+                  alignItems={"start"}
+                  overflow={"hidden"}
+                  w={"50%"}
                 >
-                  <Text>
-                    {_.startCase(getSenderName(user, selectedChat.users))}
-                  </Text>
+                  <Box
+                    display={"flex"}
+                    alignItems={"center"}
+                    justifyContent={"space-evenly"}
+                  >
+                    <Text>
+                      {_.startCase(getSenderName(user, selectedChat.users))}
+                    </Text>
+
+                    <GoPrimitiveDot
+                      size={20}
+                      color={
+                        onlineUsers.find((u) => {
+                          if (
+                            u.userId === getSenderId(user, selectedChat.users)
+                          )
+                            return true;
+                        })
+                          ? "#00a700"
+                          : "gray"
+                      }
+                    />
+                  </Box>
                   {onlineUsers.find((u) => {
                     if (u.userId === getSenderId(user, selectedChat.users))
                       return true;
                   }) ? (
-                    <GoPrimitiveDot size={20} color="#00a700" />
+                    <Text fontSize={"sm"}>Online</Text>
                   ) : (
-                    <GoPrimitiveDot size={20} color="gray" />
+                    <div className="marquee">
+                      <Text fontSize={"sm"}> Last seen {lastSeen} {unit} ago</Text>
+                    </div>
                   )}
                 </Box>
                 <ProfileModal profile={profile} />

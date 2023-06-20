@@ -20,6 +20,6 @@ MERN Stack Practice ChatApp made with socket.io
 
 # Tasks
 
--> Add last seen feat.
 -> Add message seen/unseen stat.
 -> Add dates and times when each message is being sent
+-> Loading little by little of all the messages for performance (i dont know what that's called, i guess Pagination)

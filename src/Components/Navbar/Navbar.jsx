@@ -60,30 +60,28 @@ const Navbar = () => {
   const toast = useToast();
 
   const logoutHandler = async () => {
-    if (user.isOnline) {
-      try {
-        setChats([]);
-        setNotification([]);
-        localStorage.removeItem("userInfo");
-        toast({
-          title: "Logout Successful",
-          status: "success",
-          duration: 5000,
-          isClosable: true,
-          position: "bottom",
-        });
-        socket.emit("logout", user._id);
-        navigate("/");
-      } catch (error) {
-        toast({
-          title: "Error",
-          description: error.message,
-          status: "error",
-          duration: 5000,
-          isClosable: true,
-          position: "bottom-left",
-        });
-      }
+    try {
+      setChats([]);
+      setNotification([]);
+      localStorage.removeItem("userInfo");
+      toast({
+        title: "Logout Successful",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom",
+      });
+      socket.emit("logout", user._id);
+      navigate("/");
+    } catch (error) {
+      toast({
+        title: "Logout Unsuccessful",
+        description: error.message,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom-left",
+      });
     }
   };
 
